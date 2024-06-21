@@ -1,25 +1,17 @@
 import express from "express";
 import cors from "cors";
 import session from "express-session";
-import dotenv from "dotenv";
 import db from "./config/Database.js";
 import SequelizeStore from "connect-session-sequelize";
 import UserRoute from "./routes/UserRoute.js";
-import ProductRoute from "./routes/ProductRoute.js";
 import AuthRoute from "./routes/AuthRoute.js";
+import ProductRoute from "./routes/ProductRoute.js";
 import CategoryRoute from "./routes/CategoryRoute.js";
-import Category from "./models/CategoryModel.js";
-import bodyParser from "body-parser";
-import path from "path";
-import { fileURLToPath } from "url";
-import fileupload from "express-fileupload";
+import dotenv from "dotenv";
 
 dotenv.config();
 
 const app = express();
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 const sessionStore = SequelizeStore(session.Store);
 
@@ -27,17 +19,24 @@ const store = new sessionStore({
   db: db,
 });
 
-// db.sync()
-//   .then((result) => {
-//     console.log(result);
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+const initializeApp = async () => {
+  try {
+    await db.authenticate();
+    console.log("Database connected...");
 
-// (async () => {
-//   await db.sync();
-// })();
+    // //Sinkronisasi semua model
+    // await db.sync({ alter: true });
+    // console.log("Database synced...");
+
+    // //Sinkronisasi store session
+    // await store.sync();
+    // console.log("Session store synced...");
+  } catch (error) {
+    console.error("Unable to connect to the database:", error);
+  }
+};
+
+initializeApp();
 
 app.use(
   session({
@@ -57,15 +56,13 @@ app.use(
     origin: "http://localhost:3000",
   })
 );
+
 app.use(express.json());
-app.use(fileupload());
 app.use(UserRoute);
-app.use(ProductRoute);
 app.use(AuthRoute);
 app.use(CategoryRoute);
-
-// store.sync();
+app.use(ProductRoute);
 
 app.listen(process.env.APP_PORT, () => {
-  console.log("Server up and running...");
+  console.log("Server up dan running...");
 });

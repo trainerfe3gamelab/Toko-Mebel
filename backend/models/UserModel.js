@@ -1,53 +1,57 @@
 import { Sequelize } from "sequelize";
-import db from "../config/Database.js";
+import db from "../config/Database.js"
 
 const { DataTypes } = Sequelize;
 
-const Users = db.define(
-  "tbl_users",
-  {
+const tbl_users = db.define('tbl_users', {
     uuid: {
-      type: DataTypes.STRING,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
+        type: DataTypes.STRING,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+        validate: {
+            notEmpty: true
+        }
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        len: [3, 100],
-      },
+    status: {
+        type: DataTypes.INTEGER
     },
     email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-        isEmail: true,
-      },
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false
     },
     password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    refresh_token: {
+        type: DataTypes.TEXT
+    },
+    name: {
+        type: DataTypes.STRING
+    },
+    img_url: {
+        type: DataTypes.STRING
+    },
+    phone: {
+        type: DataTypes.STRING
     },
     role: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
+        type: DataTypes.STRING
     },
-  },
-  {
-    freezeTableName: true,
-  }
-);
+    archived: {
+        type: DataTypes.TINYINT
+    },
+    resetPasswordToken: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    resetPasswordExpires: {
+        type: DataTypes.DATE,
+        allowNull: true
+    }
+}, {
+    freezeTableName: true
+});
 
-export default Users;
+export default tbl_users;

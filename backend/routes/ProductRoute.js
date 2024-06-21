@@ -1,22 +1,32 @@
 import express from "express";
+import productMulterConfig from "../middleware/productMulterConfig.js";
 import {
   getProducts,
   getProductById,
   createProduct,
   updateProduct,
   deleteProduct,
-  getProductByCategory,
-} from "../controllers/ProductsController.js";
-
-import { verifyUser } from "../middleware/AuthUser.js";
+  searchProducts,
+} from "../controllers/ProductController.js";
+import { verifyUser, adminOnly } from "../middleware/AuthUser.js";
 
 const router = express.Router();
-router.get("/products", verifyUser, getProducts);
-router.get("/products/:id", verifyUser, getProductById);
-router.get("/products/category/:id_category", getProductByCategory);
-// router.get("/products/:category", verifyUser, getProductByCategory);
-router.post("/products", createProduct);
-router.patch("/products/:id", updateProduct);
-router.delete("/products/:id", deleteProduct);
+
+router.get("/products", getProducts);
+router.get("/products/:uuid", getProductById);
+router.post(
+  "/products",
+  verifyUser,
+  adminOnly,
+  productMulterConfig.single("img_url"),
+  createProduct
+);
+router.put(
+  "/products/:uuid",
+  productMulterConfig.single("img_url"),
+  updateProduct
+);
+router.delete("/products/:uuid", deleteProduct);
+router.get("/search", searchProducts);
 
 export default router;

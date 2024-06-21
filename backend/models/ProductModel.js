@@ -1,57 +1,62 @@
-import { Sequelize } from "sequelize";
-import db from "../config/Database.js";
-import Users from "./UserModel.js";
+// ProductModel.js
+
+import { Sequelize } from 'sequelize';
+import db from '../config/Database.js';
+import Category from './CategoryModel.js';
+import User from './UserModel.js';
 
 const { DataTypes } = Sequelize;
 
-const Products = db.define(
-  "tbl_products",
-  {
+const Product = db.define('tbl_products', {
     uuid: {
-      type: DataTypes.STRING,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-      validate: {
-        notEmpty: true,
-      },
+        type: DataTypes.STRING,
+        defaultValue: Sequelize.UUIDV4,
+        allowNull: false,
+        primaryKey: true,
+        validate: {
+            notEmpty: true
+        }
     },
     archived: {
-      type: DataTypes.INTEGER,
+        type: DataTypes.TINYINT,
+        defaultValue: 1
+    },
+    id_user: {
+        type: DataTypes.STRING,
+        allowNull: true,
     },
     name: {
-      type: DataTypes.STRING,
+        type: DataTypes.STRING,
+        allowNull: false
     },
     img_url: {
-      type: DataTypes.STRING,
+        type: DataTypes.STRING
     },
     description: {
-      type: DataTypes.STRING,
+        type: DataTypes.TEXT
     },
     id_category: {
-      type: DataTypes.INTEGER,
-    },
-    id_subcategory: {
-      type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
+        references: {
+            model: Category,
+            key: 'uuid'
+        }
     },
     unit: {
-      type: DataTypes.STRING,
+        type: DataTypes.STRING
     },
     sku: {
-      type: DataTypes.STRING,
+        type: DataTypes.STRING
     },
     price: {
-      type: DataTypes.INTEGER,
-    },
-    status: {
-      type: DataTypes.INTEGER,
-    },
-  },
-  {
-    freezeTableName: true,
-  }
-);
+        type: DataTypes.FLOAT
+    }
+}, {
+    freezeTableName: true
+});
 
-Users.hasMany(Products);
-Products.belongsTo(Users, { foreignKey: "user_id" });
+// Definisi relasi dengan Category
+Product.belongsTo(Category, { foreignKey: 'id_category' });
 
-export default Products;
+
+export default Product;

@@ -1,47 +1,80 @@
-import Category from "../models/CategoryModel.js";
-import Product from "../models/ProductModel.js";
-import { Op } from "sequelize";
+// CategoryController.js
 
-export const getCategory = async (req, res) => {
+import Category from "../models/CategoryModel.js";
+
+// Create Category
+export const createCategory = async (req, res) => {
   try {
-    let response;
-    if (req.role === "admin") {
-      response = await Category.findAll({
-        attributes: ["uuid", "archived", "name", "description"],
-        include: [
-          {
-            model: User,
-            attributes: ["name", "email"],
-          },
-        ],
-      });
-    } else {
-      response = await Category.findAll({
-        attributes: ["uuid", "archived", "name", "description"],
-        include: [
-          {
-            model: User,
-            attributes: ["name", "email"],
-          },
-        ],
-      });
-    }
-    res.status(200).json(response);
+    const { code, name, description, created_by } = req.body;
+    const category = await Category.create({
+      code,
+      name,
+      description,
+      created_by,
+    });
+    res.status(201).json(category);
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
-export const createCategory = async (req, res) => {
-  const { archived, name, description } = req.body;
+// Read All Categories
+export const getCategories = async (req, res) => {
   try {
-    await Category.create({
-      archived: archived,
-      name: name,
-      description: description,
-    });
-    res.status(201).json({ msg: "Category Created Successfuly" });
+    const categories = await Category.findAll();
+    res.status(200).json(categories);
   } catch (error) {
-    res.status(500).json({ msg: error.message });
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Read Category by UUID
+export const getCategoryById = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const category = await Category.findOne({ where: { uuid } });
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+    res.status(200).json(category);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Update Category by UUID
+export const updateCategory = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const { archived, code, name, description, updated_by } = req.body;
+    let category = await Category.findOne({ where: { uuid } });
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+    category = await category.update({
+      archived: archived || category.archived,
+      code: code || category.code,
+      name: name || category.name,
+      description: description || category.description,
+      updated_by: updated_by || category.updated_by,
+    });
+    res.status(200).json(category);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Delete Category by UUID
+export const deleteCategory = async (req, res) => {
+  try {
+    const { uuid } = req.params;
+    const category = await Category.findOne({ where: { uuid } });
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+    await category.destroy();
+    res.status(200).json({ message: "Category deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };

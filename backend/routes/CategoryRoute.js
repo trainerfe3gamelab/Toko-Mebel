@@ -1,17 +1,18 @@
-import express from "express";
+import express from 'express';
 import {
-  createCategory,
-  getCategory,
-} from "../controllers/CategoryController.js";
-import { verifyUser } from "../middleware/AuthUser.js";
+    getCategories,
+    getCategoryById,
+    createCategory,
+    updateCategory,
+    deleteCategory
+} from '../controllers/CategoryController.js';
 
 const router = express.Router();
-//router.get("/products", verifyUser, getProducts);
-//router.get("/products/:id", verifyUser, getProductById);
-router.get("/category", verifyUser, getCategory);
-router.post("/category", verifyUser, createCategory);
-//router.post("/category", verifyUser, createProduct);
-// router.patch("/products/:id", verifyUser, updateProduct);
-// router.delete("/products/:id", verifyUser, deleteProduct);
+
+router.get('/categories', getCategories);
+router.get('/categories/:uuid', getCategoryById);
+router.post('/categories', createCategory);
+router.put('/categories/:uuid', updateCategory);
+router.delete('/categories/:uuid', deleteCategory);
 
 export default router;

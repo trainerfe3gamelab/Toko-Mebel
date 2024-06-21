@@ -1,9 +1,8 @@
-import {Sequelize} from "sequelize";
+import { Sequelize } from "sequelize";
 
-const db = new Sequelize('Hgc4BBfbnFDOFrRk', 'NM8viuexHzD8vtxd', 'SV1qWPf0SrQyCE0n', {
-    host: "educalab.id",
-    port: 3307,
+const db = new Sequelize('toko_online', 'root', '', {
+    host: "localhost",
     dialect: "mysql"
-});
+})
 
 export default db;
